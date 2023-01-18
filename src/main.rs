@@ -7,8 +7,11 @@ struct Shortcut {
 }
 
 impl Shortcut {
-    fn new(keys: String, description: String) -> Shortcut {
-        Shortcut { keys, description }
+    fn new(keys: &str, description: &str) -> Shortcut {
+        Shortcut {
+            keys: keys.to_string(),
+            description: description.to_string(),
+        }
     }
 
     fn get_row(&self) -> Row {
@@ -25,15 +28,16 @@ struct ShortcutsCategory {
 }
 
 impl ShortcutsCategory {
-    fn new(name: String, keys_vector: Vec<Shortcut>) -> ShortcutsCategory {
-        ShortcutsCategory { name, keys_vector }
+    fn new(name: &str, keys_vector: Vec<Shortcut>) -> ShortcutsCategory {
+        ShortcutsCategory {
+            name: name.to_string(),
+            keys_vector,
+        }
     }
 
     fn get_category_table(&self) -> Table {
         let mut table = Table::new();
-
         table.set_format(*format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR);
-
         table.set_titles(Row::new(vec![Cell::new(&self.name.as_str()).with_hspan(2)]));
 
         for k in &self.keys_vector {
@@ -41,6 +45,12 @@ impl ShortcutsCategory {
         }
 
         table
+    }
+
+    fn filter_out_by_query(&mut self, query: &str) {
+        let query = query.to_lowercase();
+        self.keys_vector
+            .retain(|s| s.description.to_lowercase().contains(&query));
     }
 }
 
@@ -53,21 +63,25 @@ impl Categories {
         Categories {
             categories: vec![
                 ShortcutsCategory::new(
-                    "Insertions".to_string(),
+                    "Editing",
                     vec![
-                        Shortcut::new("di(".to_string(), "Delete inside parenthesis".to_string()),
+                        Shortcut::new("di(", "Delete content between parenthesis"),
                         Shortcut::new(
-                            "ci(".to_string(),
-                            "Delete and insert inside parenthesis".to_string(),
+                            "ci(",
+                            "Delete old and insert new content between parenthesis",
                         ),
                     ],
                 ),
                 ShortcutsCategory::new(
-                    "Movements".to_string(),
-                    vec![Shortcut::new(
-                        "zz".to_string(),
-                        "Center this line".to_string(),
-                    )],
+                    "Cursor movement",
+                    vec![
+                        Shortcut::new("zz", "Center cursor on screen"),
+                        Shortcut::new("b", "Jump backwards to the start of a word"),
+                        Shortcut::new("w", "Jump forwards to the start of a word"),
+                        Shortcut::new("e", "Jump forwards to the end of a word"),
+                        Shortcut::new("Ctlr + u", "Move back 1/2 a screen"),
+                        Shortcut::new("Ctlr + d", "Move forward 1/2 a screen"),
+                    ],
                 ),
             ],
         }
@@ -77,6 +91,15 @@ impl Categories {
         for c in &self.categories {
             c.get_category_table().printstd();
             println!();
+        }
+    }
+
+    fn print_by_query(&mut self, query: &str) {
+        for c in &mut self.categories {
+            c.filter_out_by_query(&query);
+            if c.keys_vector.is_empty() == false {
+                c.get_category_table().printstd();
+            }
         }
     }
 }
@@ -95,10 +118,8 @@ fn main() {
         .get_matches();
 
     let query = matches.get_one::<String>("QUERY");
-
     if query.is_some() && query.unwrap().is_empty() == false {
-        println!("Query is: {}", query.unwrap());
-
+        Categories::new().print_by_query(query.unwrap());
         std::process::exit(0)
     }
 
