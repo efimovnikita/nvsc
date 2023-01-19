@@ -88,6 +88,7 @@ impl Categories {
     }
 
     fn print_all(&self) {
+        println!();
         for c in &self.categories {
             c.get_category_table().printstd();
             println!();
@@ -95,10 +96,12 @@ impl Categories {
     }
 
     fn print_by_query(&mut self, query: &str) {
+        println!();
         for c in &mut self.categories {
             c.filter_out_by_query(&query);
             if c.keys_vector.is_empty() == false {
                 c.get_category_table().printstd();
+                println!();
             }
         }
     }
