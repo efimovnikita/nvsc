@@ -114,6 +114,9 @@ impl Categories {
                     vec![
                         Shortcut::new(":%s/word1/word2/g", "Search and replace all occurrences 'word1' to 'word2'"),
                         Shortcut::new(":1,10s/word1/word2/g", "Search and replace all occurrences 'word1' to 'word2' between line 1 to 10"),
+                        Shortcut::new("/word", "Search 'word'"),
+                        Shortcut::new("n", "Next search match"),
+                        Shortcut::new("N", "Previous search match"),
                     ]
                 ),
             ],
