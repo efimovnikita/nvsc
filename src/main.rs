@@ -106,7 +106,14 @@ impl Categories {
                 ),
                 ShortcutsCategory::new("Exiting", 
                     vec![
-                        Shortcut::new("ZZ", "Save and quit"),Shortcut::new("ZQ", "Quit without changes"),
+                        Shortcut::new("ZZ", "Save and quit"),
+                        Shortcut::new("ZQ", "Quit without changes"),
+                    ]
+                ),
+                ShortcutsCategory::new("Search", 
+                    vec![
+                        Shortcut::new(":%s/word1/word2/g", "Search and replace all occurrences 'word1' to 'word2'"),
+                        Shortcut::new(":1,10s/word1/word2/g", "Search and replace all occurrences 'word1' to 'word2' between line 1 to 10"),
                     ]
                 ),
             ],
